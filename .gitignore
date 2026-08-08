@@ -1,0 +1,19 @@
+# Secrets — never commit
+*.key
+*.pem
+id_*
+!id_*.pub
+kubeconfig
+*.kubeconfig
+.env
+*.env
+secrets.yaml
+*-secret.yaml
+
+# Terraform / OpenTofu state
+*.tfstate
+*.tfstate.backup
+.terraform/
+
+# OS noise
+.DS_Store
