@@ -19,6 +19,8 @@ follows the same five-line core so it stays scannable at 3 a.m.:
 | [github-ssh-remote-failures.md](github-ssh-remote-failures.md) | Access / Git | MacBook → GitHub |
 | [host-discovery-mdns.md](host-discovery-mdns.md) | Network / DNS | k3s-worker-01 |
 | [ufw-enable-without-lockout.md](ufw-enable-without-lockout.md) | Network / firewall | k3s-worker-01 |
+| [docker-socket-permission-denied.md](docker-socket-permission-denied.md) | Container runtime / permissions | k3s-worker-01 |
+| [dual-homed-pi-disable-wifi.md](dual-homed-pi-disable-wifi.md) | Network / link layer | k3s-worker-01, k3s-worker-02 |
 
 ## Conventions
 
