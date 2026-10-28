@@ -21,6 +21,7 @@ follows the same five-line core so it stays scannable at 3 a.m.:
 | [ufw-enable-without-lockout.md](ufw-enable-without-lockout.md) | Network / firewall | k3s-worker-01 |
 | [docker-socket-permission-denied.md](docker-socket-permission-denied.md) | Container runtime / permissions | k3s-worker-01 |
 | [dual-homed-pi-disable-wifi.md](dual-homed-pi-disable-wifi.md) | Network / link layer | k3s-worker-01, k3s-worker-02 |
+| [ssh-password-auth-cloud-init-override.md](ssh-password-auth-cloud-init-override.md) | Access / sshd config precedence | k3s-worker-01, -02, -03 (fixed via Ansible from fluxcp) |
 
 ## Conventions
 
@@ -28,4 +29,3 @@ follows the same five-line core so it stays scannable at 3 a.m.:
   and anything starting with `-----BEGIN` are not.
 - State which host each command runs on.
 - Record the software version — several of these are version-sensitive.
-- [ssh-password-auth-cloud-init-override](ssh-password-auth-cloud-init-override.md) — password SSH still on because a cloud-init drop-in beat sshd_config
