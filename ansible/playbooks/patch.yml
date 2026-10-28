@@ -1,0 +1,55 @@
+---
+# Rolling OS patch for k3s worker Pis: one node at a time, reboot only if required.
+# Run:  ansible-playbook playbooks/patch.yml -K --check   (dry run: lists what would upgrade)
+#       ansible-playbook playbooks/patch.yml -K           (apply)
+- name: Patch | rolling apt upgrade of k3s worker nodes
+  hosts: k3s_workers
+  become: true
+  serial: 1               # one host per batch; a failure stops the line before the next node
+
+  pre_tasks:
+    - name: Guard | arm64 Ubuntu only
+      ansible.builtin.assert:
+        that:
+          - ansible_facts['architecture'] == 'aarch64'
+          - ansible_facts['distribution'] == 'Ubuntu'
+
+    - name: Record | kernel before patching
+      ansible.builtin.set_fact:
+        kernel_before: "{{ ansible_facts['kernel'] }}"
+
+  tasks:
+    - name: APT | refresh package index (skip if refreshed in the last hour)
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: "APT | full upgrade (apt-get dist-upgrade, allows kernel/dependency changes)"
+      ansible.builtin.apt:
+        upgrade: dist
+      register: upgrade_result
+
+    - name: APT | remove packages nothing depends on any more
+      ansible.builtin.apt:
+        autoremove: true
+
+    - name: Reboot | does the OS say it needs one?
+      ansible.builtin.stat:
+        path: /var/run/reboot-required
+      register: reboot_flag
+
+    - name: Reboot | only if required, then wait until SSH is back
+      ansible.builtin.reboot:
+        msg: "Ansible patch.yml reboot"
+        reboot_timeout: 600         # Pi 5 normally returns in ~40 s; 10 min is the give-up point
+        test_command: uptime
+      when: reboot_flag.stat.exists
+
+  post_tasks:
+    - name: Record | re-read facts after possible reboot
+      ansible.builtin.setup:
+        gather_subset: min
+
+    - name: Report | kernel before vs after
+      ansible.builtin.debug:
+        msg: "{{ inventory_hostname }}: kernel {{ kernel_before }} -> {{ ansible_facts['kernel'] }}, rebooted={{ reboot_flag.stat.exists }}"

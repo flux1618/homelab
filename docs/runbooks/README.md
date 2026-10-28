@@ -22,6 +22,7 @@ follows the same five-line core so it stays scannable at 3 a.m.:
 | [docker-socket-permission-denied.md](docker-socket-permission-denied.md) | Container runtime / permissions | k3s-worker-01 |
 | [dual-homed-pi-disable-wifi.md](dual-homed-pi-disable-wifi.md) | Network / link layer | k3s-worker-01, k3s-worker-02 |
 | [ssh-password-auth-cloud-init-override.md](ssh-password-auth-cloud-init-override.md) | Access / sshd config precedence | k3s-worker-01, -02, -03 (fixed via Ansible from fluxcp) |
+| [kernel-installed-but-not-running.md](kernel-installed-but-not-running.md) | Guest OS / patching | k3s-worker-02 (found via Ansible patch dry run) |
 
 ## Conventions
 
