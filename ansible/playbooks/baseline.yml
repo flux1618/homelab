@@ -1,0 +1,41 @@
+---
+# Baseline for k3s worker Pis. Idempotent: safe to re-run any time.
+# Run:  ansible-playbook playbooks/baseline.yml -K --check --diff   (dry run)
+#       ansible-playbook playbooks/baseline.yml -K                  (apply)
+- name: Baseline | k3s worker nodes
+  hosts: k3s_workers
+  become: true            # every task runs as root via sudo.ws (see hosts.ini)
+
+  pre_tasks:
+    - name: Guard | refuse to run on anything that is not an arm64 Ubuntu box
+      ansible.builtin.assert:
+        that:
+          - ansible_facts['architecture'] == 'aarch64'
+          - ansible_facts['distribution'] == 'Ubuntu'
+        fail_msg: "Unexpected host: {{ ansible_facts['architecture'] }} / {{ ansible_facts['distribution'] }}"
+
+  tasks:
+    - name: SSH | key-only login drop-in (sorts before 50-cloud-init.conf, so it wins)
+      ansible.builtin.copy:
+        dest: /etc/ssh/sshd_config.d/00-hardening.conf
+        owner: root
+        group: root
+        mode: "0644"
+        content: |
+          # Managed by Ansible: homelab/ansible/playbooks/baseline.yml. Do not edit by hand.
+          # sshd keeps the FIRST value it reads; this file sorts before 50-cloud-init.conf.
+          PasswordAuthentication no
+          KbdInteractiveAuthentication no
+          PermitRootLogin no
+      notify: Reload sshd      # only fires if the file actually changed
+
+    - name: SSH | validate the merged sshd config before anything reloads
+      ansible.builtin.command: /usr/sbin/sshd -t
+      changed_when: false      # read-only check, never counts as a change
+      check_mode: false        # safe to run during --check; it only reads config
+
+  handlers:
+    - name: Reload sshd
+      ansible.builtin.systemd_service:
+        name: ssh
+        state: reloaded        # reload, not restart: existing sessions survive

@@ -28,3 +28,4 @@ follows the same five-line core so it stays scannable at 3 a.m.:
   and anything starting with `-----BEGIN` are not.
 - State which host each command runs on.
 - Record the software version — several of these are version-sensitive.
+- [ssh-password-auth-cloud-init-override](ssh-password-auth-cloud-init-override.md) — password SSH still on because a cloud-init drop-in beat sshd_config
