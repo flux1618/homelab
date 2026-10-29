@@ -15,6 +15,7 @@
         fail_msg: "Unexpected host: {{ ansible_facts['architecture'] }} / {{ ansible_facts['distribution'] }}"
 
   tasks:
+    # --- SSH: key-only login ---------------------------------------------
     - name: SSH | key-only login drop-in (sorts before 50-cloud-init.conf, so it wins)
       ansible.builtin.copy:
         dest: /etc/ssh/sshd_config.d/00-hardening.conf
@@ -34,8 +35,44 @@
       changed_when: false      # read-only check, never counts as a change
       check_mode: false        # safe to run during --check; it only reads config
 
+    # --- Network: wired only ---------------------------------------------
+    - name: Network | stop cloud-init from regenerating netplan on reboot
+      ansible.builtin.copy:
+        dest: /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
+        owner: root
+        group: root
+        mode: "0644"
+        content: |
+          # Managed by Ansible: baseline.yml. Nodes are wired-only; netplan is ours.
+          network: {config: disabled}
+
+    - name: "Network | guard: no Wi-Fi block in netplan (nodes are wired-only)"
+      ansible.builtin.shell: "! grep -q 'wifis:' /etc/netplan/*.yaml"
+      changed_when: false
+      check_mode: false
+
+    # --- APT: updates pocket missing from the stock image ----------------
+    - name: APT | enable the resolute-updates pocket (stock image shipped without it)
+      ansible.builtin.copy:
+        dest: /etc/apt/sources.list.d/ubuntu-updates.sources
+        owner: root
+        group: root
+        mode: "0644"
+        content: |
+          # Managed by Ansible: baseline.yml. The image's ubuntu.sources lacks -updates.
+          Types: deb
+          URIs: http://archive.ubuntu.com/ubuntu/
+          Suites: resolute-updates
+          Components: main restricted universe multiverse
+          Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+      notify: Refresh apt cache
+
   handlers:
     - name: Reload sshd
       ansible.builtin.systemd_service:
         name: ssh
         state: reloaded        # reload, not restart: existing sessions survive
+
+    - name: Refresh apt cache
+      ansible.builtin.apt:
+        update_cache: true

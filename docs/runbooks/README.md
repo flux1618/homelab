@@ -23,6 +23,8 @@ follows the same five-line core so it stays scannable at 3 a.m.:
 | [dual-homed-pi-disable-wifi.md](dual-homed-pi-disable-wifi.md) | Network / link layer | k3s-worker-01, k3s-worker-02 |
 | [ssh-password-auth-cloud-init-override.md](ssh-password-auth-cloud-init-override.md) | Access / sshd config precedence | k3s-worker-01, -02, -03 (fixed via Ansible from fluxcp) |
 | [kernel-installed-but-not-running.md](kernel-installed-but-not-running.md) | Guest OS / patching | k3s-worker-02 (found via Ansible patch dry run) |
+| [apt-updates-pocket-missing.md](apt-updates-pocket-missing.md) | Guest OS / packaging | k3s-worker-01, -02, -03 (fleet-wide image defect) |
+| [ansible-check-mode-limits.md](ansible-check-mode-limits.md) | Automation / Ansible | fluxcp (control node) |
 
 ## Conventions
 
