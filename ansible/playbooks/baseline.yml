@@ -35,6 +35,12 @@
       changed_when: false      # read-only check, never counts as a change
       check_mode: false        # safe to run during --check; it only reads config
 
+    - name: SSH | authorized_keys for flux is exactly the list in group_vars (exclusive)
+      ansible.posix.authorized_key:
+        user: flux
+        exclusive: true
+        key: "{{ ssh_authorized_keys | map(attribute='key') | join('\n') }}"
+
     # --- Network: wired only ---------------------------------------------
     - name: Network | stop cloud-init from regenerating netplan on reboot
       ansible.builtin.copy:

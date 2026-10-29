@@ -25,6 +25,7 @@ follows the same five-line core so it stays scannable at 3 a.m.:
 | [kernel-installed-but-not-running.md](kernel-installed-but-not-running.md) | Guest OS / patching | k3s-worker-02 (found via Ansible patch dry run) |
 | [apt-updates-pocket-missing.md](apt-updates-pocket-missing.md) | Guest OS / packaging | k3s-worker-01, -02, -03 (fleet-wide image defect) |
 | [ansible-check-mode-limits.md](ansible-check-mode-limits.md) | Automation / Ansible | fluxcp (control node) |
+| [ansible-permission-denied-empty-agent.md](ansible-permission-denied-empty-agent.md) | Access / Ansible client | fluxcp -> all workers |
 
 ## Conventions
 

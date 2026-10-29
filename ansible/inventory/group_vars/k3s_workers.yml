@@ -1,0 +1,11 @@
+---
+# Access list for the flux user on every k3s worker. Public keys only.
+# baseline.yml applies this with exclusive: true -> keys not listed here are REMOVED.
+# Revoking a device = delete its entry, run baseline.yml.
+ssh_authorized_keys:
+  - name: fluxcp (Ansible control node)       # never remove: Ansible's own access
+    key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAID4e+fwsA2D5tbLhhzLlf1wIuC/8LBKmmt5GAb4YcVMt ansible@fluxcp"
+  - name: Windows PC (uwu2)
+    key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBeBeqWbhXgPOpyUUji8DjwbNy+sJQxOmWp0L9IinGHV uwu2-to-k3sworker01"
+  # - name: MacBook        <- add when you have its public key (ssh-keygen -y -f ~/.ssh/<key>)
+  #   key: "ssh-ed25519 AAAA... "
